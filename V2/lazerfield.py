@@ -2,14 +2,14 @@ import time
 import pygame
 import os
 class Player():
-    def __init__(self, o, dx, dy, hitbox, mb=7, speed=10):
+    def __init__(self, o, dx, dy, hitbox, mb=7, speed=5):
         self.o = o
         if o == False:
             self.x = 0
             self.y = 0
         else:
-            self.x = dx - hitbox - 40
-            self.y = dy - hitbox  -  40
+            self.x = dx - 20
+            self.y = dy - 20
         self.hb = hitbox
         self.speed = speed
         self.dx = dx
@@ -20,12 +20,12 @@ class Player():
     def move(self, d):
         self.rmb()
         self.x = max(20, min(self.x + (d * self.speed), self.dx - self.hb))
-    def shoot(self, s):
+    def shoot(self, s, b=False):
         self.rmb()
         if s == 0:
             self.s = True
         elif self.s == True and len(self.bullets) <= self.maxb:
-            self.bullets.append(Bullet(self.x, self.o, self.y, self.hb, dy = self.dy))    
+            self.bullets.append(Bullet(self.x, self.o, self.y, self.hb, dy = self.dy, b=b))    
             self.s = False
     def rmb(self):
         for bullet in self.bullets:
@@ -37,15 +37,16 @@ class Player():
 
 
 class Bullet():
-    def __init__(self, x, o, y, hx, dy, speed=20, hy=60):
+    def __init__(self, x, o, y, hx, dy, speed=20, hy=48, b=False):
         self.x = x
         self.t = time.monotonic()
         self.o = o
         self.speed = speed
-        self.y = y
+        self.y = y + hx
         self.hx = hx
         self.hy = hy
         self.dy = dy + 40
+        self.b = b
     def rm(self):
         if time.monotonic() - self.t > .75 or self.y >= self.dy:
             return True
@@ -57,13 +58,12 @@ class Bullet():
         else:
             self.y+=self.speed
 
-ph1 = 0
+ph1 = 45
 
 class Lazer_field():
-    def __init__(self, ph, dx=540, dy=385, w=5):
+    def __init__(self, ph=45, dx=540, dy=385, w=5):
         self.dx = dx
         self.dy = dy
-        self.reset()
         self.p1s = 0
         self.p2s = 0
         self.win = w
@@ -71,12 +71,12 @@ class Lazer_field():
         self.winner = None
         self.name = None
         self.ph = ph
+        self.reset()
         ph1 = ph  
         
-    def new_game(self, ph, dx=540, dy=385, w=5):
+    def new_game(self, ph=45, dx=540, dy=385, w=5):
         self.dx = dx
         self.dy = dy
-        self.reset()
         self.p1s = 0
         self.p2s = 0
         self.win = w
@@ -87,21 +87,21 @@ class Lazer_field():
         print("hello")
         self.reset()
     def reset(self):
-        self.p1 = Player(False, self.dx, dy=self.dy, hitbox=ph1)
-        self.p2 = Player(True, self.dx, dy=self.dy, hitbox=ph1)   
+        self.p1 = Player(False, self.dx, dy=self.dy, hitbox=self.ph)
+        self.p2 = Player(True, self.dx, dy=self.dy, hitbox=self.ph)   
     def collide(self):
         c1 = False
 
         self.p1.rmb()
         self.p2.rmb()
         for bullet in self.p1.bullets:
-            if ((bullet.x > self.p2.x and bullet.x < self.p2.x + self.p2.hb) or (bullet.x + bullet.hx > self.p2.x and bullet.x + bullet.hx < self.p2.x + self.p2.hb)):
+            if ((bullet.x > self.p2.x - self.p2.hb/2 and bullet.x < self.p2.x + self.p2.hb/2) or (bullet.x + bullet.hx > self.p2.x - self.p2.hb/2 and bullet.x + bullet.hx < self.p2.x + self.p2.hb/2)):
                 if ((bullet.y < self.p2.y and bullet.y + bullet.hy > self.p2.y) or (bullet.y + bullet.hy > self.p2.y + self.p2.hb and bullet.y < self.p2.y + self.p2.hb)):
                     c1 = True
                     b1 = bullet
         c2 = False        
         for bullet in self.p2.bullets:
-            if ((bullet.x > self.p1.x and bullet.x < self.p1.x + self.p1.hb) or (bullet.x + bullet.hx > self.p1.x and bullet.x + bullet.hx < self.p1.x + self.p1.hb)):
+            if ((bullet.x > self.p1.x - self.p1.hb/2 and bullet.x < self.p1.x + self.p1.hb/2) or (bullet.x + bullet.hx > self.p1.x - self.p1.hb/2 and bullet.x + bullet.hx < self.p1.x + self.p1.hb/2)):
                 if ((bullet.y < self.p1.y and bullet.y + bullet.hy > self.p1.y) or (bullet.y + bullet.hy > self.p1.y + self.p1.hb and bullet.y < self.p1.y + self.p1.hb)):
                     
                     c2 = True
