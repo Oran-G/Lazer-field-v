@@ -42,6 +42,8 @@ p2b = False
 lp2b = False
 p1b = False
 lp1b = False
+show_hb = False
+lshow_hb = False
 while True:
     if game.done == False:
         screen.fill(BLACK)
@@ -68,7 +70,13 @@ while True:
         game.p1.shoot(sh, b=p1b) 
         game.p2.move(keystate[pygame.K_d] - keystate[pygame.K_a])
         sh = keystate[pygame.K_w] or keystate[pygame.K_s]
-             
+        
+        if keystate[pygame.K_h] == True:
+            if lshow_hb == False:
+                show_hb = not(p1b)
+                lshow_hb = True
+        else:
+            lshow_hb = False 
              
         game.p2.shoot(sh, b=p2b)
         
@@ -76,6 +84,8 @@ while True:
             pygame.draw.rect(screen, (255, 255,255), (star[0], star[1], 1, 1))
         # print(game)
         # print(game.collide())
+        if keystate[pygame.K_m] == True:
+            print(game)
         game.collide()
         game.p1.rmb()
         game.p2.rmb()
@@ -86,51 +96,76 @@ while True:
         line = smallFont.render(f"Player 2: {game.p2s}", True, WHITE)
         lineRect = line.get_rect()
         lineRect.center = (width - 68, 30)
-        screen.blit(line, lineRect)# pygame.draw.rect(screen, (0, 255, 0), (BOARD_PADDING + (cell_size * (game.p1.x)),25 + BOARD_PADDING + (cell_size * (game.p1.y)),cell_size,cell_size))
+        screen.blit(line, lineRect)
+        # pygame.draw.rect(screen, (0, 255, 0), (BOARD_PADDING + (cell_size * (game.p1.x)),25 + BOARD_PADDING + (cell_size * (game.p1.y)),cell_size,cell_size))
 
+        
         screen.blit(pygame.transform.scale(load_image("X-wing.png"), 
             (cell_size, int((cell_size/4 )* 3))), (game.p2.x , game.p2.y + (cell_size/4) + 1))
         screen.blit(
             pygame.transform.rotozoom(load_image("tie-fighter.png"), 
                 0, 
                 cell_size/475), 
-            (BOARD_PADDING + game.p1.x - 2,
-                22 + BOARD_PADDING + game.p1.y))
-
+            (game.p1.x - 2,
+                game.p1.y))
+        if show_hb == True:        
+            pygame.draw.rect(screen, (255, 0, 0), (game.p1.x, game.p1.y, game.p1.hb, game.p1.hb), width = 1)
+            pygame.draw.rect(screen, (255, 0, 0), (game.p2.x, game.p2.y, game.p2.hb, game.p2.hb), width = 1)
         for bullet in game.p1.bullets:
             bullet.update()
+            if show_hb == True:
+                pygame.draw.rect(screen, (255, 0, 0), (bullet.x, bullet.y, bullet.hx, bullet.hy), width = 1)
             if bullet.b == False:
                 pygame.draw.rect(screen, 
                     (0, 255, 0), 
-                    (BOARD_PADDING + bullet.x + 1,bullet.y + BOARD_PADDING + game.p1.hb, 2,bullet.hy), border_bottom_left_radius=1, border_bottom_right_radius=1)
+                    (bullet.x + 1,bullet.y, 2,bullet.hy), border_bottom_left_radius=1, border_bottom_right_radius=1)
                 pygame.draw.rect(screen, 
                     (0, 255, 0), 
-                    (BOARD_PADDING + cell_size + 1 + bullet.x  - 4, bullet.y + BOARD_PADDING + game.p1.hb, 2,bullet.hy), border_bottom_left_radius=1, border_bottom_right_radius=1)
+                    (cell_size + 1 + bullet.x  - 4, bullet.y, 2,bullet.hy), border_bottom_left_radius=1, border_bottom_right_radius=1)
             else:
                 pygame.draw.rect(screen, 
                     (0, 255, 0), 
-                    (BOARD_PADDING + bullet.x + 1,bullet.y + BOARD_PADDING + game.p1.hb, 2,(bullet.hy/8)*2), border_bottom_left_radius=1, border_bottom_right_radius=1)
+                    (bullet.x + 1,bullet.y, 2,(bullet.hy/8)*2), border_bottom_left_radius=1, border_bottom_right_radius=1)
                 pygame.draw.rect(screen, 
                     (0, 255, 0), 
-                    (BOARD_PADDING + cell_size + 1 + bullet.x  - 4, bullet.y + BOARD_PADDING + game.p1.hb, 2,(bullet.hy/8)*2), border_bottom_left_radius=1, border_bottom_right_radius=1)
+                    (cell_size + 1 + bullet.x  - 4, bullet.y, 2,(bullet.hy/8)*2), border_bottom_left_radius=1, border_bottom_right_radius=1)
 
                 pygame.draw.rect(screen, 
                     (0, 255, 0), 
-                    (BOARD_PADDING + bullet.x + 1,bullet.y + BOARD_PADDING + game.p1.hb + ((bullet.hy/6)*4), 2,(bullet.hy/6)*2), border_bottom_left_radius=1, border_bottom_right_radius=1)
+                    (bullet.x + 1,bullet.y + ((bullet.hy/6)*4), 2,(bullet.hy/6)*2), border_bottom_left_radius=1, border_bottom_right_radius=1)
                 pygame.draw.rect(screen, 
                     (0, 255, 0), 
-                    (BOARD_PADDING + cell_size + 1 + bullet.x  - 4, bullet.y + BOARD_PADDING + game.p1.hb + ((bullet.hy/6)*4), 2,(bullet.hy/6)*2), border_bottom_left_radius=1, border_bottom_right_radius=1)
+                    (cell_size + 1 + bullet.x  - 4, bullet.y + ((bullet.hy/6)*4), 2,(bullet.hy/6)*2), border_bottom_left_radius=1, border_bottom_right_radius=1)
 
         for bullet in game.p2.bullets:
             # pygame.draw.rect(screen, (255, 0, 0), (BOARD_PADDING + (cell_size * (bullet.x)),25 + BOARD_PADDING, cell_size,(cell_size* (game.dy - 1)) - 1))
             bullet.update()
-            pygame.draw.rect(screen, 
-                (255, 0, 0), 
-                (bullet.x + 1,bullet.y + BOARD_PADDING - game.p1.hb - bullet.hy, 2,bullet.hy), border_bottom_left_radius=1, border_bottom_right_radius=1)
-            pygame.draw.rect(screen, 
-                (255, 0, 0), 
-                (bullet.x + cell_size - 3,bullet.y + BOARD_PADDING - game.p1.hb - bullet.hy, 2,bullet.hy), border_bottom_left_radius=1, border_bottom_right_radius=1)
-        
+            if show_hb == True:
+                pygame.draw.rect(screen, (255, 0, 0), (bullet.x, bullet.y, bullet.hx, bullet.hy), width = 1)
+            if bullet.b == False:
+                
+                pygame.draw.rect(screen, 
+                    (255, 0, 0), 
+                    (bullet.x + 1,bullet.y, 2,bullet.hy), border_bottom_left_radius=1, border_bottom_right_radius=1)
+                pygame.draw.rect(screen, 
+                    (255, 0, 0), 
+                    (bullet.x + cell_size - 3,bullet.y, 2,bullet.hy), border_bottom_left_radius=1, border_bottom_right_radius=1)
+            else:
+                pygame.draw.rect(screen, 
+                    (255, 0, 0), 
+                    (bullet.x + 1,bullet.y, 2,(bullet.hy/8)*2), border_bottom_left_radius=1, border_bottom_right_radius=1)
+                pygame.draw.rect(screen, 
+                    (255, 0, 0), 
+                    (cell_size + 1 + bullet.x  - 4, bullet.y, 2,(bullet.hy/8)*2), border_bottom_left_radius=1, border_bottom_right_radius=1)
+
+                pygame.draw.rect(screen, 
+                    (255, 0, 0), 
+                    (bullet.x + 1,bullet.y + ((bullet.hy/6)*4), 2,(bullet.hy/6)*2), border_bottom_left_radius=1, border_bottom_right_radius=1)
+                pygame.draw.rect(screen, 
+                    (255, 0, 0), 
+                    (cell_size + 1 + bullet.x  - 4, bullet.y + ((bullet.hy/6)*4), 2,(bullet.hy/6)*2), border_bottom_left_radius=1, border_bottom_right_radius=1)
+
+
 
 
         

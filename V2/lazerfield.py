@@ -5,8 +5,8 @@ class Player():
     def __init__(self, o, dx, dy, hitbox, mb=7, speed=5):
         self.o = o
         if o == False:
-            self.x = 0
-            self.y = 0
+            self.x = -5
+            self.y = 50
         else:
             self.x = dx - 20
             self.y = dy - 20
@@ -42,7 +42,7 @@ class Bullet():
         self.t = time.monotonic()
         self.o = o
         self.speed = speed
-        self.y = y + hx
+        self.y = y + hx if o == False else y - hy
         self.hx = hx
         self.hy = hy
         self.dy = dy + 40
@@ -87,7 +87,7 @@ class Lazer_field():
         print("hello")
         self.reset()
     def reset(self):
-        self.p1 = Player(False, self.dx, dy=self.dy, hitbox=self.ph)
+        self.p1 = Player(False, self.dx - 20, dy=self.dy, hitbox=self.ph)
         self.p2 = Player(True, self.dx, dy=self.dy, hitbox=self.ph)   
     def collide(self):
         c1 = False
@@ -101,9 +101,11 @@ class Lazer_field():
                     b1 = bullet
         c2 = False        
         for bullet in self.p2.bullets:
-            if ((bullet.x > self.p1.x - self.p1.hb/2 and bullet.x < self.p1.x + self.p1.hb/2) or (bullet.x + bullet.hx > self.p1.x - self.p1.hb/2 and bullet.x + bullet.hx < self.p1.x + self.p1.hb/2)):
+            if ((bullet.x > self.p1.x and bullet.x < self.p1.x + self.p1.hb) or (bullet.x + bullet.hx > self.p1.x and bullet.x + bullet.hx < self.p1.x + self.p1.hb)):
                 if ((bullet.y < self.p1.y and bullet.y + bullet.hy > self.p1.y) or (bullet.y + bullet.hy > self.p1.y + self.p1.hb and bullet.y < self.p1.y + self.p1.hb)):
-                    
+                    print("hello")
+                    print(self.p1.x)
+                    print(bullet.x)
                     c2 = True
                     b2 = bullet
         if c1 == True and c2 == True:
@@ -146,6 +148,7 @@ class Lazer_field():
 
     def __str__(self):
         s = f"P1: X {self.p1.x} p2: X {self.p2.x}\n"
+        return s
         for i in range(self.dy):
             for j in range(self.dx):
                 q = True
