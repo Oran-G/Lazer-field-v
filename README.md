@@ -1,5 +1,5 @@
 # Lazer-field-v
-Virtual Lazer Field game implementation <br/>
+Virtual Lazer Field game implementation written in python using pygame 2.0<br/>
 <h2>To play game</h2><br/>
 Make sure python3 is installed (https://realpython.com/installing-python/) <br>
 Navigate to correct version file in the terminal<br>
